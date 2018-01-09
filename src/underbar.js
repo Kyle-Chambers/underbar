@@ -321,6 +321,7 @@
 
     return function() {
       var arg = JSON.stringify(arguments);
+
       if (saved[arg] === undefined) {
         saved[arg] = func.apply(this, arguments);
       }
@@ -389,7 +390,7 @@
         func = functionOrKey
       }
 
-      return func.apply(ele, args)
+      return func.apply(ele, args);
     });
   };
 
@@ -398,9 +399,14 @@
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
-    // hmmmmmmmm ?? figure out how to handle iterator string edge case
     return collection.sort(function(a, b) {
+
+      if (typeof iterator === 'string'){
+        return a[iterator] - b[iterator];
+      }
+
       return iterator(a) - iterator(b);
+
     });
   };
 
@@ -439,17 +445,77 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    return _.reduce(nestedArray, function(acc, ele){
+
+      if (Array.isArray(ele)){
+        return acc.concat(_.flatten(ele));
+      } else {
+        return acc.concat([ele]);
+      }
+
+    }, []);
   };
 
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    // var args = Array.from(arguments);
+    // var matchingIndexes = _.zip.apply(this, args);
+    // var result = [];
+    //
+    // _.each(matchingIndexes, function(array){
+    //   if (array[0] === array[1]){
+    //     result.push(array[0]);
+    //   }
+    // });
+    //
+    // return result;
+
+
+    // order of items in array does not matter...
+
+    var args = Array.from(arguments);
+    var length = args.length;
+    var countSame = {}
+
+    _.each(args, function(array){
+      _.each(array, function(item){
+        if (!countSame[item]){
+          countSame[item] = 1;
+        } else {
+          countSame[item]++;
+        }
+      });
+    });
+
+    var result = [];
+
+    for (var key in countSame){
+      if (countSame[key] === args.length){
+        result.push(key);
+      }
+    }
+
+    return result;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    // var args = Array.from(arguments);
+    // var same = _.intersection.apply(this, args);
+    // var result = [];
+    //
+    // _.each(array, function(ele){
+    //   if (_.indexOf(same, ele) === -1){
+    //     result.push(ele);
+    //   }
+    // });
+    //
+    // return result;
+
+    //investigate intersection again to see if implemented propertly... (test is failing as result)
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
